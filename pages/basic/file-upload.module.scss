@@ -1,0 +1,12 @@
+.status {
+  padding: 10px;
+  background-color: #eeeeee;
+  color: #999999;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+
+  .row {
+    background-color:#ffffff;
+    padding: 1rem;
+  }
+}
