@@ -1,4 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import Caver, { AbstractFeeDelegatedWithRatioTransaction } from 'caver-js';
 
 declare global {
   type Klaytn = {
@@ -46,9 +47,11 @@ const Wallet = () => {
 
   const Klaytn = useContext(KlaytnContext);
 
+
   const [status, setStatus] = useState(false);
   const [address, setAddress] = useState('unknown');
   const [network, setNetwork] = useState('unknown');
+  const [balance, setBalance] = useState('unknown');
 
   const networkName = {
     1001: 'Baobab Test Network',
@@ -65,7 +68,6 @@ const Wallet = () => {
         setNetworkInfo();
         setStatus(true);
         Klaytn.on('accountsChanged', () => setAccountInfo());
-        Klaytn.on('networkChanged', () => setNetworkInfo());
       } catch (error) {
         console.log(`${page} - User denied account access`);
       }
@@ -73,18 +75,25 @@ const Wallet = () => {
   );
 
   const setNetworkInfo = useCallback(
-    () => {
+    async () => {
       if (Klaytn === undefined) return
       setNetwork(networkName[Klaytn.networkVersion]);
+      const caver = new Caver(klaytn);
+      const balance = await caver.klay.getBalance(Klaytn.selectedAddress);
+      setBalance(caver.utils.fromPeb(balance, 'KLAY'));
+      Klaytn.on('networkChanged', () => setNetworkInfo());
     }, [network]
   )
 
   // 계정 정보 변경 콜백
   const setAccountInfo = useCallback(
-    () => {  
+    async () => {  
       if (Klaytn === undefined) return
       setAddress(Klaytn.selectedAddress);
-    }, [address]
+      const caver = new Caver(klaytn);
+      const balance = await caver.klay.getBalance(Klaytn.selectedAddress);
+      setBalance(caver.utils.fromPeb(balance, 'KLAY'));
+    }, [address, network]
   );
 
   useEffect(() =>{
@@ -96,19 +105,23 @@ const Wallet = () => {
     <div>
       <h2>Wallet Component</h2>
       <div>
-        <label style={{color:'#999999'}}>Status</label>
+        <label style={{fontWeight:'bold'}}>Status</label>
         {
           status ? (<span style={{paddingLeft: '10px', color:'green'}}>😀</span>) 
             : (<span style={{paddingLeft: '10px', color:'red'}}>🥲</span>)
         }
       </div>
       <div>
-        <label style={{color:'#999999'}}>Address</label>
+        <label style={{fontWeight:"bold"}}>Address</label>
         <span style={{paddingLeft: '10px'}}>{address}</span>
       </div>
       <div>
-        <label style={{color:'#999999'}}>Network</label>
+        <label style={{fontWeight:'bold'}}>Network</label>
         <span style={{paddingLeft: '10px'}}>{network}</span>
+      </div>
+      <div>
+        <label style={{fontWeight:'bold'}}>Balance</label>
+        <span style={{paddingLeft: '10px'}}>{balance}&nbsp;Klay</span>
       </div>
     </div>
   )
