@@ -4,11 +4,13 @@ const nextConfig = {
   webpack5: true,
   webpack: (config) => {
     config.resolve.fallback = {
-      crypto: false,
       fs: false,
-      http: false,
-      https: false,
-      stream: false,
+      net: false,
+      stream: require.resolve('stream-browserify'),
+      crypto: require.resolve('crypto-browserify'),
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
+      os: require.resolve('os-browserify/browser'),
     };
 
     return config;

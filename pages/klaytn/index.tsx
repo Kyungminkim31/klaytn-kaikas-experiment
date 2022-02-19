@@ -33,6 +33,7 @@ const Index = () => {
         <h1>Klaytn Index Page</h1>
         <KlaytnContext.Provider value={Klaytn}>
           <Wallet />
+          <BaobabSmartContract />
         </KlaytnContext.Provider>
       </>
     )
@@ -123,6 +124,16 @@ const Wallet = () => {
         <label style={{fontWeight:'bold'}}>Balance</label>
         <span style={{paddingLeft: '10px'}}>{balance}&nbsp;Klay</span>
       </div>
+    </div>
+  )
+}
+
+const BaobabSmartContract = () => {
+  const caver = new Caver('https://api.baobab.klaytn.net:8651/');
+
+  return (
+    <div>
+      <h2>BaobabSmartContract</h2>
     </div>
   )
 }
